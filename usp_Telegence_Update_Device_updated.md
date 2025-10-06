@@ -1,11 +1,13 @@
--- =============================================
--- Author:  Lee Daniel (Updated by automation)
--- Create date: 2019-10-28
---
--- Description: Updates TelegenceDevice based on the data in TelegenceDeviceStaging.
---              Updated to remove 3-sync hold, add feed-validity guard, and set
---              devices missing from a valid feed to Unknown immediately.
--- =============================================
+### Updated Stored Procedure: usp_Telegence_Update_Device
+
+The following SQL alters the procedure to:
+- Validate feed completeness and skip updates on invalid runs
+- Upsert device rows from staging, updating raw/effective statuses and last-seen timestamps
+- Immediately set devices not in the valid feed to `Unknown` with reason `NOT_FOUND_IN_FEED`
+- Remove the previous 3-sync hold logic
+- Provide a feature flag to toggle the immediate-unknown behavior
+
+```sql
 CREATE OR ALTER PROCEDURE [dbo].[usp_Telegence_Update_Device]
     @ServiceProviderId INT
 AS
@@ -221,3 +223,4 @@ BEGIN
 
     COMMIT TRANSACTION;
 END
+```
